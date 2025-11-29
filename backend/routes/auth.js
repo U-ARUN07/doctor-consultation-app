@@ -10,143 +10,183 @@ const passport = require('passport');
 const router = express.Router();
 
 
-const signToken = (id,type) => 
-    jwt.sign({id,type}, process.env.JWT_SECRET, {expiresIn: '7d'});
+const signToken = (id, type) =>
+    jwt.sign({ id, type }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 
 router.post('/doctor/register',
     [
         body('name').notEmpty(),
         body('email').isEmail(),
-        body('password').isLength({min:6}),
+        body('password').isLength({ min: 6 }),
     ],
     validate,
-    async (req,res) => {
+    async (req, res) => {
         try {
-            const exists = await Doctor.findOne({email: req.body.email});
-            if(exists) return res.badRequest("Doctor alredy exists");
-            const hashed = await bcrypt.hash(req.body.password,12);
-            const doc = await Doctor.create({...req.body, password:hashed});
+            const exists = await Doctor.findOne({ email: req.body.email });
+            if (exists) return res.badRequest("Doctor alredy exists");
+            const hashed = await bcrypt.hash(req.body.password, 12);
+            const doc = await Doctor.create({ ...req.body, password: hashed });
             const token = signToken(doc._id, 'doctor');
-            res.created({token, user: {id:doc._id, type:'doctor'}},'Doctor registered')
+            res.created({
+                token, user: {
+                    id: doc._id,
+                    type: 'doctor',
+                    name: doc.name,
+                    email: doc.email,
+                    profileImage: doc.profileImage,
+                    isVerified: doc.isVerified
+                }
+            }, 'Doctor registered')
         } catch (error) {
             res.serverError('Registration failed', [error.message])
         }
     }
- )
+)
 
 
- router.post('/doctor/login',
+router.post('/doctor/login',
     [
         body('email').isEmail(),
-        body('password').isLength({min:6}),
+        body('password').isLength({ min: 6 }),
     ],
     validate,
-    async (req,res) => {
+    async (req, res) => {
         try {
-            const doc = await Doctor.findOne({email: req.body.email});
-            if(!doc ||  !doc.password) return res.unauthorized("Invalid credentials");
+            const doc = await Doctor.findOne({ email: req.body.email });
+            if (!doc || !doc.password) return res.unauthorized("Invalid credentials");
             const match = await bcrypt.compare(req.body.password, doc.password);
-            if(!match ) return res.unauthorized("Invalid credentials");
+            if (!match) return res.unauthorized("Invalid credentials");
             const token = signToken(doc._id, 'doctor');
-            res.created({token, user: {id:doc._id, type:'doctor'}},'Login successful')
+            res.created({
+                token, user: {
+                    id: doc._id,
+                    type: 'doctor',
+                    name: doc.name,
+                    email: doc.email,
+                    profileImage: doc.profileImage,
+                    isVerified: doc.isVerified
+                }
+            }, 'Login successful')
         } catch (error) {
             res.serverError('Login failed', [error.message])
         }
     }
- )
+)
 
 
- router.post('/patient/register',
+router.post('/patient/register',
     [
         body('name').notEmpty(),
         body('email').isEmail(),
-        body('password').isLength({min:6}),
+        body('password').isLength({ min: 6 }),
     ],
     validate,
-    async (req,res) => {
+    async (req, res) => {
         try {
-            const exists = await Patient.findOne({email: req.body.email});
-            if(exists) return res.badRequest("Patient alredy exists");
-            const hashed = await bcrypt.hash(req.body.password,12);
-            const patient = await Patient.create({...req.body, password:hashed});
+            const exists = await Patient.findOne({ email: req.body.email });
+            if (exists) return res.badRequest("Patient alredy exists");
+            const hashed = await bcrypt.hash(req.body.password, 12);
+            const patient = await Patient.create({ ...req.body, password: hashed });
             const token = signToken(patient._id, 'patient');
-            res.created({token, user: {id:patient._id, type:'patient'}},'Patient registered')
+            res.created({
+                token, user: {
+                    id: patient._id,
+                    type: 'patient',
+                    name: patient.name,
+                    email: patient.email,
+                    profileImage: patient.profileImage,
+                    isVerified: patient.isVerified
+                }
+            }, 'Patient registered')
         } catch (error) {
             res.serverError('Registration failed', [error.message])
         }
     }
- )
+)
 
 
- router.post('/patient/login',
+router.post('/patient/login',
     [
         body('email').isEmail(),
-        body('password').isLength({min:6}),
+        body('password').isLength({ min: 6 }),
     ],
     validate,
-    async (req,res) => {
+    async (req, res) => {
         try {
-            const patient = await Patient.findOne({email: req.body.email});
-            if(!patient ||  !patient.password) return res.unauthorized("Invalid credentials");
+            const patient = await Patient.findOne({ email: req.body.email });
+            if (!patient || !patient.password) return res.unauthorized("Invalid credentials");
             const match = await bcrypt.compare(req.body.password, patient.password);
-            if(!match ) return res.unauthorized("Invalid credentials");
+            if (!match) return res.unauthorized("Invalid credentials");
             const token = signToken(patient._id, 'patient');
-            res.created({token, user: {id:patient._id, type:'patient'}},'Login successful')
+            res.created({
+                token, user: {
+                    id: patient._id,
+                    type: 'patient',
+                    name: patient.name,
+                    email: patient.email,
+                    profileImage: patient.profileImage,
+                    isVerified: patient.isVerified
+                }
+            }, 'Login successful')
         } catch (error) {
             res.serverError('Login failed', [error.message])
         }
     }
- )
+)
 
 
 
- //Google Outh Start form here
+//Google Outh Start form here
 
 
- router.get('/google', (req,res,next) => {
+router.get('/google', (req, res, next) => {
     const userType = req.query.type || 'patient';
 
     passport.authenticate('google', {
-        scope:['profile', 'email'],
-        state:userType,
-        prompt:'select_account'
-    })(req,res,next)
- })
+        scope: ['profile', 'email'],
+        state: userType,
+        prompt: 'select_account'
+    })(req, res, next)
+})
 
 
-
- router.get('/google/callback', 
-    passport.authenticate('google', {
-        session:false,
-        failureRedirect: "/auth/failure"
+router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+        failureRedirect: "/login",
+        session: false,
     }),
-
-    async(req,res) => {
+    (req, res) => {
         try {
-             const {user,type} = req.user;
-             const token = signToken(user._id,type);
+            // Passport strategy returns { user, type } as the user object
+            const { user, type } = req.user || {};
 
+            if (!user) {
+                throw new Error("User not found in request");
+            }
 
-             //Redirect to frontend with token
-             const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-             const redirectUrl = `${frontendUrl}/auth/success?token=${token}&type=${type}&user=${encodeURIComponent(JSON.stringify({
-                id: user._id,
-                name: user.name,
-                email:user.email,
-                profileImage: user.profileImage,
-             }))}`;
+            const token = signToken(user._id, type);
 
-             res.redirect(redirectUrl)
+            const frontendUrl = (
+                process.env.FRONTEND_URL || "http://localhost:3000"
+            ).replace(/\/$/, "");
+
+            const redirectUrl = `${frontendUrl}/auth/success?token=${token}&type=${type}&user=${encodeURIComponent(
+                JSON.stringify({
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    profileImage: user.profileImage,
+                })
+            )}`;
+
+            res.redirect(redirectUrl);
         } catch (error) {
-        res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=${encodeURIComponent(e.message)}`)
+            console.error("Google callback error:", error);
+            res.redirect("/login?error=auth_failed");
         }
     }
- )
+);
 
-
- //Auth failure
- router.get('/failure', (req,res) => res.badRequest('Google authentication Failed'))
-
-
- module.exports = router;
+module.exports = router;

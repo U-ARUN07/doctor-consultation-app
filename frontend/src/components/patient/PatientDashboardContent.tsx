@@ -170,48 +170,48 @@ const PatientDashboardContent = () => {
 
             <div className="mt-6 flex flex-col md:flex-row items-center md:justify-between space-y-3 md:space-y-0">
 
-            <div className="flex space-x-2">
-              {canJoinCall(appointment) && (
-                <Link href={`/call/${appointment._id}`}>
-                <Button
-                 size='sm'
-                 className="bg-green-600 hover:bg-green-700"
-                >
-                  <Video className="w-4 h-4 mr-2"/>
-                  Join Call
-                  </Button></Link>
-              )}
+              <div className="flex space-x-2">
+                {canJoinCall(appointment) && (
+                  <Link href={`/call/${appointment._id}`}>
+                    <Button
+                      size='sm'
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Video className="w-4 h-4 mr-2" />
+                      Join Call
+                    </Button></Link>
+                )}
 
-                  {appointment.status === 'Completed' && appointment.prescription && (
-                    <PrescriptionViewModal
-                     appointment={appointment}
-                     userType="patient"
-                     trigger={
+                {appointment.status === 'Completed' && appointment.prescription && (
+                  <PrescriptionViewModal
+                    appointment={appointment}
+                    userType="patient"
+                    trigger={
                       <Button
-                       variant='outline'
-                       size='sm'
-                       className="text-green-700 border-green-200 hover:bg-green-50"
+                        variant='outline'
+                        size='sm'
+                        className="text-green-700 border-green-200 hover:bg-green-50"
                       >
-                        <FileText className="w-4 h-4 mr-2"/>
+                        <FileText className="w-4 h-4 mr-2" />
                         View Prescription
                       </Button>
-                     }
-                    />
-                  )}
-
-
-
-            </div>
-
-            {appointment.status === 'Completed' && (
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_,i) => (
-                  <Star
-                   className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    }
                   />
-                ))}
+                )}
+
+
+
+              </div>
+
+              {appointment.status === 'Completed' && (
+                <div className="flex items-center space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
                 </div>
-            )}
+              )}
             </div>
           </div>
         </div>

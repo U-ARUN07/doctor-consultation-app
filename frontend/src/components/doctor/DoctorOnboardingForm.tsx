@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { healthcareCategoriesList, specializations } from "@/lib/constant";
+import { healthcareCategoriesList, specializations, specializationToCategoryMap } from "@/lib/constant";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
@@ -46,6 +46,10 @@ const DoctorOnboardingForm = () => {
 
   const { updateProfile, user, loading } = userAuthStore();
   const router = useRouter();
+
+  const availableCategories = formData.specialization && specializationToCategoryMap[formData.specialization]
+    ? specializationToCategoryMap[formData.specialization]
+    : healthcareCategoriesList;
 
   const handleCategoryToggle = (category: string): void => {
     setFormData((prev: DoctorFormData) => ({
@@ -132,6 +136,7 @@ const DoctorOnboardingForm = () => {
                       setFormData((prev) => ({
                         ...prev,
                         specialization: value,
+                        categories: [], // Reset categories when specialization changes
                       }))
                     }
                   >
@@ -170,7 +175,7 @@ const DoctorOnboardingForm = () => {
                 </p>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {healthcareCategoriesList.map((category: string) => (
+                  {availableCategories.map((category: string) => (
                     <div className="flex items-center space-x-2" key={category}>
                       <Checkbox
                         id={category}

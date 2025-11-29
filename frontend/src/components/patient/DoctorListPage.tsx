@@ -42,7 +42,7 @@ const DoctorListPage = () => {
   }, [fetchDoctors, filters]);
 
   const handleFilterChange = (key: keyof DoctorFilters, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value === "all" ? "" : value }));
   };
 
   const clearFilters = () => {
@@ -245,13 +245,13 @@ const DoctorListPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-4 text-sm text-gray-600">
-          {loading ? "Seaching..." : `${doctors.length} doctor found`}
+          {loading ? "Searching..." : `${doctors.length} doctor found`}
         </div>
 
-        {loading ? (
+        {loading && doctors.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="amimate-plus">
+              <Card key={i} className="animate-pulse">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto"></div>
@@ -268,107 +268,122 @@ const DoctorListPage = () => {
             ))}
           </div>
         ) : doctors.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {doctors.map((doctor) => (
-              <Card
-                key={doctor._id}
-                className="hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-md h-full"
-              >
-                <CardContent className="p-6 flex flex-col h-full">
-                  <div className="text-center mb-4">
-                    <Avatar className="w-20 h-20 mx-auto mb-3">
-                      <AvatarImage
-                        src={doctor.profileImage}
-                        alt={doctor.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 text-xl font-bold">
-                        {doctor.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {doctors.map((doctor) => (
+                <Card
+                  key={doctor._id}
+                  className="hover:shadow-xl transition-all duration-300 bg-white border-0 shadow-md h-full"
+                >
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="text-center mb-4">
+                      <Avatar className="w-20 h-20 mx-auto mb-3">
+                        <AvatarImage
+                          src={doctor.profileImage}
+                          alt={doctor.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 text-xl font-bold">
+                          {doctor.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    <h3 className="text-lg font-bold text-blue-700 mb-1">
-                      {doctor.name}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-1">
-                      {doctor.specialization}
-                    </p>
+                      <h3 className="text-lg font-bold text-blue-700 mb-1">
+                        {doctor.name}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-1">
+                        {doctor.specialization}
+                      </p>
 
-                    <p className="text-gray-500 text-xs mb-2">
-                      {doctor.experience} years experience
-                    </p>
+                      <p className="text-gray-500 text-xs mb-2">
+                        {doctor.experience} years experience
+                      </p>
 
-                    <div className="flex items-center justify-center space-x-1 mb-3">
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className="w-4 h-4 fill-orange-400 text-orange-400"
-                          />
-                        ))}
+                      <div className="flex items-center justify-center space-x-1 mb-3">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className="w-4 h-4 fill-orange-400 text-orange-400"
+                            />
+                          ))}
+                        </div>
+                        <span className="font-bold">5.0</span>
+                        <span className="text-gray-500 text-xs">(620)</span>
                       </div>
-                      <span className="font-bold">5.0</span>
-                      <span className="text-gray-500 text-xs">(620)</span>
                     </div>
-                  </div>
 
-                  <div className="flex flex-wrap gap-1 justify-center mb-4">
-                    {doctor.category?.slice(0, 2).map((category, idx) => (
+                    <div className="flex flex-wrap gap-1 justify-center mb-4">
+                      {doctor.category?.slice(0, 2).map((category, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                        >
+                          {category}
+                        </Badge>
+                      ))}
+
                       <Badge
-                        key={idx}
                         variant="secondary"
-                        className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                        className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs"
                       >
-                        {category}
+                        <Star className="w-3 h-3 mr-1" />
+                        Popular
                       </Badge>
-                    ))}
-
-                    <Badge
-                      variant="secondary"
-                      className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs"
-                    >
-                      <Star className="w-3 h-3 mr-1" />
-                      Popular
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-2 mb-4 text-center">
-                    <div className="flex items-center justify-center text-gray-600">
-                      <MapPin className="w-4 h-4 mr-1"/>
-                      <span className="text-sm">{doctor.hospitalInfo.city}</span>
                     </div>
 
-                           <div className="flex justify-center items-center gap-2 text-center">
-                     <p className="text-gray-600 text-md font-semibold">
-                      Consultation Fee:
-                     </p>
-                     <p className="font-bold text-green-600 text-lg">₹{doctor.fees}</p>
-                  </div>
-                  </div>
+                    <div className="space-y-2 mb-4 text-center">
+                      <div className="flex items-center justify-center text-gray-600">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        <span className="text-sm">{doctor.hospitalInfo.city}</span>
+                      </div>
 
-           
+                      <div className="flex justify-center items-center gap-2 text-center">
+                        <p className="text-gray-600 text-md font-semibold">
+                          Consultation Fee:
+                        </p>
+                        <p className="font-bold text-green-600 text-lg">₹{doctor.fees}</p>
+                      </div>
+                    </div>
 
-                  <div className="mt-auto">
-                    <Link href={`/patient/booking/${doctor._id}`} className="block">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg ply-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all">
-                        Book Appointment
-                    </Button>
-                    </Link>
 
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+                    <div className="mt-auto">
+                      <Link href={`/patient/booking/${doctor._id}`} className="block">
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg ply-2 text-sm font-medium shadow-lg hover:shadow-xl transition-all">
+                          Book Appointment
+                        </Button>
+                      </Link>
+
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {doctors.length < (useDoctorStore.getState().pagination.total || 0) && (
+              <div className="mt-8 text-center">
+                <Button
+                  variant="outline"
+                  className="min-w-[200px]"
+                  onClick={() => fetchDoctors(filters, true)}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Load More Doctors"}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
-           <Card className="p-12 text-center">
+          <Card className="p-12 text-center">
             <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto"/>
+              <Search className="w-16 h-16 mx-auto" />
             </div>
             <h3 className="text-xl font-semibold text-gray-600 mb-2">No doctors found</h3>
             <p className="text-gray-500 mb-4">Try adjusting your filters or search criteria</p>
             <Button onClick={clearFilters}>Clear Filters</Button>
-           </Card>
+          </Card>
         )}
       </div>
     </div>

@@ -1,0 +1,12 @@
+Connected to MongoDB
+Testing with Doctor: nikhil (692983e26afad70d95e34510)
+Found 2 appointments.
+Appointment 1:
+  Status: Scheduled
+  Patient Name: arun
+  ✅ Patient name is present
+Appointment 2:
+  Status: Scheduled
+  Patient Name: arun
+  ✅ Patient name is present
+Disconnected from MongoDB

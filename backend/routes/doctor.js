@@ -111,6 +111,7 @@ router.put(
     body("availabilityRange.startDate").optional().isISO8601(),
     body("availabilityRange.endDate").optional().isISO8601(),
     body("availabilityRange.excludedWeekdays").optional().isArray(),
+    body("availabilityRange.blockedDates").optional().isArray(),
     body("dailyTimeRanges").isArray({ min: 1 }),
     body("dailyTimeRanges.*.start").isString(),
     body("dailyTimeRanges.*.end").isString(),
@@ -223,7 +224,7 @@ router.get(
           totalPatients,
           todayAppointments: todayAppointments.length,
           totalRevenue,
-          completedAppointments:completedAppointmentCount,
+          completedAppointments: completedAppointmentCount,
           averageRating: 4.8,
         },
         todayAppointments,
@@ -235,7 +236,7 @@ router.get(
         },
       };
 
-      res.ok(dashboardData,'Dashboard data retrived')
+      res.ok(dashboardData, 'Dashboard data retrived')
     } catch (error) {
       console.error("Dashboard error", error);
       res.serverError("failed to fetch doctor dashboard", [error.message]);

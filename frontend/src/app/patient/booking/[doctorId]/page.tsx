@@ -33,8 +33,8 @@ const page = () => {
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [createdAppointmentId,setCreatedAppointmentId] = useState<string | null>(null)
-  const [patientName,setPatientName] = useState<string>('')
+  const [createdAppointmentId, setCreatedAppointmentId] = useState<string | null>(null)
+  const [patientName, setPatientName] = useState<string>('')
 
   useEffect(() => {
     if (doctorId) {
@@ -69,13 +69,18 @@ const page = () => {
         Math.max(today.getTime(), startDate.getTime())
       );
 
+      const blockedDates = currentDoctor?.availabilityRange?.blockedDates || [];
+
       for (
         let d = new Date(iterationStart);
         d <= endDate && dates.length < 90;
         d.setDate(d.getDate() + 1)
       ) {
-        dates.push(toLocalYMD(d));
-        //Convert date into YYYY-MM-DD format and add to list
+        const dateString = toLocalYMD(d);
+        if (!blockedDates.includes(dateString)) {
+          dates.push(dateString);
+        }
+        //Convert date into YYYY-MM-DD format and add to list if not blocked
       }
 
       setAvailableDates(dates);
@@ -90,7 +95,7 @@ const page = () => {
 
       const slotDuration = currentDoctor?.slotDurationMinutes || 30;
 
-      currentDoctor.dailyTimeRanges.forEach((timeRange:any) => {
+      currentDoctor.dailyTimeRanges.forEach((timeRange: any) => {
         const startMintues = timeToMinutes(timeRange.start);
         //Convert start time (e.g, "12:00") => total mintues (e.g., 540)
 
@@ -136,7 +141,7 @@ const page = () => {
       const platformFees = Math.round(consultationFees * 0.1);
       const totalAmount = consultationFees + platformFees;
 
-      const appointment=await bookAppointment({
+      const appointment = await bookAppointment({
         doctorId: doctorId,
         slotStartIso: slotStart.toISOString(),
         slotEndIso: slotEnd.toISOString(),
@@ -150,12 +155,12 @@ const page = () => {
 
 
       //store appointemnt Id and patinet name for paymnet 
-      if(appointment && appointment?._id) {
+      if (appointment && appointment?._id) {
         setCreatedAppointmentId(appointment._id);
         setPatientName(appointment.patientId.name || 'Patient')
-      }else{
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-            router.push("/patient/dashboard");
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        router.push("/patient/dashboard");
       }
     } catch (error: any) {
       console.error(error);
@@ -170,8 +175,8 @@ const page = () => {
   };
 
 
-  const handlePaymentSuccess = (appointment:any) => {
-                router.push("/patient/dashboard");
+  const handlePaymentSuccess = (appointment: any) => {
+    router.push("/patient/dashboard");
   }
 
   if (!currentDoctor) {
@@ -216,16 +221,14 @@ const page = () => {
               {[1, 2, 3].map((step) => (
                 <React.Fragment key={step}>
                   <div
-                    className={`flex items-center space-x-2 ${
-                      currentStep >= step ? "text-blue-600" : "text-gray-400"
-                    }`}
+                    className={`flex items-center space-x-2 ${currentStep >= step ? "text-blue-600" : "text-gray-400"
+                      }`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full border-2 ${
-                        currentStep >= step
+                      className={`w-8 h-8 rounded-full border-2 ${currentStep >= step
                           ? "bg-blue-600 border-blue-600 "
                           : "border-gray-200"
-                      } flex items-center justify-center`}
+                        } flex items-center justify-center`}
                     >
                       {currentStep > step ? (
                         <Check className="w-4 h-4 text-white" />
@@ -240,8 +243,8 @@ const page = () => {
                       {step === 1
                         ? "Select Time"
                         : step === 2
-                        ? "Deatils"
-                        : "Payment"}
+                          ? "Deatils"
+                          : "Payment"}
                     </span>
                   </div>
                   {step < 3 && <div className="w-12 h-px bg-gray-300"></div>}
@@ -270,16 +273,16 @@ const page = () => {
                       exit={{ opacity: 0, x: -20 }}
                     >
                       <CalendarStep
-                       selectedDate={selectedDate}
-                       setSelectedDate={setSelectedDate}
-                       selectedSlot={selectedSlot}
-                       setSelectedSlot={setSelectedSlot}
-                       availableSlots={availableSlots}
-                       availableDates={availableDates}
-                       excludedWeekdays={currentDoctor?.availabilityRange?.excludedWeekdays || []}
-                       bookedSlots={bookedSlots}
-                       onContinue={() => setCurrentStep(2)}
-                      
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        selectedSlot={selectedSlot}
+                        setSelectedSlot={setSelectedSlot}
+                        availableSlots={availableSlots}
+                        availableDates={availableDates}
+                        excludedWeekdays={currentDoctor?.availabilityRange?.excludedWeekdays || []}
+                        bookedSlots={bookedSlots}
+                        onContinue={() => setCurrentStep(2)}
+
                       />
                     </motion.div>
                   )}
@@ -291,14 +294,14 @@ const page = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                     >
-                      <ConsultationStep 
-                       consultationType={consultationType}
-                       setConsultationType={setConsultationType}
-                       setSymptoms={setSymptoms}
-                       symptoms={symptoms}
-                       doctorFees={currentDoctor?.fees}
-                       onBack={() => setCurrentStep(1)}
-                       onContinue={() => setCurrentStep(3)}
+                      <ConsultationStep
+                        consultationType={consultationType}
+                        setConsultationType={setConsultationType}
+                        setSymptoms={setSymptoms}
+                        symptoms={symptoms}
+                        doctorFees={currentDoctor?.fees}
+                        onBack={() => setCurrentStep(1)}
+                        onContinue={() => setCurrentStep(3)}
                       />
                     </motion.div>
                   )}
@@ -310,20 +313,20 @@ const page = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                     >
-                      <PayementStep 
-                      selectedDate={selectedDate}
-                      selectedSlot={selectedSlot}
-                      consultationType={consultationType}
-                      doctorName={currentDoctor.name}
-                      slotDuration={currentDoctor.slotDurationMinutes}
-                      consultationFee={getConsultationPrice()}
-                      isProcessing={isPaymentProcessing}
-                            onBack={() => setCurrentStep(2)}
-                            onConfirm={handleBooking}
-                            onPaymentSuccess={handlePaymentSuccess}
-                            loading={loading}
-                            appointmentId={createdAppointmentId || undefined}
-                            patientName={patientName || undefined}
+                      <PayementStep
+                        selectedDate={selectedDate}
+                        selectedSlot={selectedSlot}
+                        consultationType={consultationType}
+                        doctorName={currentDoctor.name}
+                        slotDuration={currentDoctor.slotDurationMinutes}
+                        consultationFee={getConsultationPrice()}
+                        isProcessing={isPaymentProcessing}
+                        onBack={() => setCurrentStep(2)}
+                        onConfirm={handleBooking}
+                        onPaymentSuccess={handlePaymentSuccess}
+                        loading={loading}
+                        appointmentId={createdAppointmentId || undefined}
+                        patientName={patientName || undefined}
                       />
                     </motion.div>
                   )}

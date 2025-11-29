@@ -1,0 +1,9 @@
+Connected to MongoDB
+Testing with Doctor: nikhil
+Testing with Patient: Test Patient
+Attempting to book slot: 2025-11-30T04:30:00.000Z - 2025-11-30T05:00:00.000Z
+Cleaned up existing appointments for this slot.
+✅ First appointment booked successfully.
+Attempting to book the SAME slot again...
+✅ SUCCESS: Double booking prevented by Database Index (Duplicate Key Error).
+Disconnected from MongoDB

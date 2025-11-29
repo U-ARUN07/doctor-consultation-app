@@ -19,9 +19,9 @@ interface DoctorState {
   setCurrentDoctor: (doctor: Doctor) => void;
 
   //Api Action
-  fetchDoctors: (filters: DoctorFilters) => Promise<void>;
+  fetchDoctors: (filters: DoctorFilters, isLoadMore?: boolean) => Promise<void>;
   fetchDoctorById: (id: string) => Promise<void>;
-  fetchDashboard: (period?:string) => Promise<void>
+  fetchDashboard: (period?: string) => Promise<void>
 }
 
 export const useDoctorStore = create<DoctorState>((set, get) => ({
@@ -38,21 +38,27 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
   clearError: () => set({ error: null }),
 
   setCurrentDoctor: (doctor) => set({ currentDoctor: doctor }),
-  fetchDoctors: async (filters = {}) => {
+  fetchDoctors: async (filters = {}, isLoadMore = false) => {
     set({ loading: true, error: null });
     try {
+      const state = get();
+      const page = isLoadMore ? state.pagination.page + 1 : 1;
+
       const queryParams = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {
           queryParams.append(key, value.toString());
         }
       });
+      queryParams.append("page", page.toString());
+      queryParams.append("limit", state.pagination.limit.toString());
+
       const response = await getWithAuth(
         `/doctor/list?${queryParams.toString()}`
       );
 
       set({
-        doctors: response.data,
+        doctors: isLoadMore ? [...state.doctors, ...response.data] : response.data,
         pagination: {
           page: response.meta?.page || 1,
           limit: response.meta?.limit || 20,
@@ -79,7 +85,7 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
   },
 
 
-    fetchDashboard: async () => {
+  fetchDashboard: async () => {
     set({ loading: true, error: null });
     try {
       const response = await getWithAuth('/doctor/dashboard');
@@ -91,5 +97,5 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
     }
   },
 
-  
+
 }));

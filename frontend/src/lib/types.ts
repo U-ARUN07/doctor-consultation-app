@@ -39,7 +39,7 @@ export interface User {
   type: "doctor" | "patient";
   phone?: string;
   profileImage?: string;
-  isVerified:boolean
+  isVerified: boolean
 
   // Patient fields
   dob?: string;
@@ -104,6 +104,7 @@ export interface Doctor {
     startDate: Date;
     endDate: Date;
     excludedWeekdays: number[];
+    blockedDates: string[];
   };
   dailyTimeRanges: {
     start: string; // e.g., "09:00"

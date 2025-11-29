@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
- title: 'MediCare+ - Online Doctor Consultations',
+  title: 'MediCare+ - Online Doctor Consultations',
   description: 'Connect with certified doctors online for quality healthcare. Professional medical consultations from the comfort of your home.',
   keywords: ['telemedicine', 'online doctor', 'healthcare', 'consultation', 'medical advice', 'teleconsultation'],
   authors: [{ name: 'MediCare+' }],
@@ -27,12 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-              {children}
+          {children}
         </Providers>
       </body>
     </html>

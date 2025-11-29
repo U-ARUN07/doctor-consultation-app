@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -35,56 +35,67 @@ class HttpService {
     options?: RequestOptions
   ): Promise<ApiResponse<T>> {
     try {
-        const url = `${BASE_URL}${endPoint}`;
-        const headers = {
-            ...this.getHeaders(auth),
-            ...options?.headers
-        }
+      const url = `${BASE_URL}${endPoint}`;
+      console.log(`[HttpService] Requesting: ${method} ${url}`);
 
-        const config : RequestInit= {
-            method,
-            headers,
-            ...(body && {body: JSON.stringify(body)})
-        }
+      const headers = {
+        ...this.getHeaders(auth),
+        ...options?.headers
+      }
 
-        const response = await fetch(url, config);
-        const data : ApiResponse <T> = await response.json();
-        if(!response.ok) {
+      const config: RequestInit = {
+        method,
+        headers,
+        ...(body && { body: JSON.stringify(body) })
+      }
+
+      const response = await fetch(url, config);
+
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error(`[HttpService] Non-JSON response from ${url}:`, text.substring(0, 200));
+        throw new Error(`Received non-JSON response from server. Status: ${response.status}`);
+      }
+
+      const data: ApiResponse<T> = await response.json();
+      if (!response.ok) {
         throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`)
-        }
-        return data;
-    } catch (error:any) {
-        console.error(`Api Error [${method} ${endPoint} ]:`, error)
-        console.log(error)
-        throw error;
+      }
+      return data;
+    } catch (error: any) {
+      console.error(`Api Error [${method} ${endPoint} ]:`, error)
+      console.log(error)
+      throw error;
     }
   }
 
   //Method with authentication
-  async getWithAuth<T = any > (endPoint:string,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'GET',null, true, options)
+  async getWithAuth<T = any>(endPoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'GET', null, true, options)
   }
 
 
-    async postWithAuth<T = any > (endPoint:string,body:any,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'POST',body, true, options)
+  async postWithAuth<T = any>(endPoint: string, body: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'POST', body, true, options)
   }
 
-      async putWithAuth<T = any > (endPoint:string,body:any,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'PUT',body, true, options)
+  async putWithAuth<T = any>(endPoint: string, body: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'PUT', body, true, options)
   }
 
-    async deleteWithAuth<T = any > (endPoint:string,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'DELETE',null, true, options)
+  async deleteWithAuth<T = any>(endPoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'DELETE', null, true, options)
   }
 
 
-      async postWithoutAuth<T = any > (endPoint:string,body:any,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'POST',body, false, options)
+  async postWithoutAuth<T = any>(endPoint: string, body: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'POST', body, false, options)
   }
 
-        async getWithoutAuth<T = any > (endPoint:string,options?:RequestOptions): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endPoint,'GET',null, false, options)
+  async getWithoutAuth<T = any>(endPoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endPoint, 'GET', null, false, options)
   }
 }
 

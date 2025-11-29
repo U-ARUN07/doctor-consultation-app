@@ -1,4 +1,3 @@
-"use client";
 import {
   Bell,
   Calendar,
@@ -9,7 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import {
@@ -22,6 +21,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { userAuthStore } from "@/store/authStore";
+import { useAppointmentStore } from "@/store/appointmentStore";
 
 interface HeaderProps {
   showDashboardNav?: boolean;
@@ -33,14 +33,75 @@ interface NavigationItem {
   href: string;
   active: boolean;
 }
+
+interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  timestamp: Date;
+  read: boolean;
+}
+
 const Header: React.FC<HeaderProps> = ({ showDashboardNav = false }) => {
   const { user, isAuthenticated, logout } = userAuthStore();
+  const { appointments, fetchAppointments } = useAppointmentStore();
   const pathname = usePathname();
   const router = useRouter();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchAppointments(user.type as "doctor" | "patient");
+    }
+  }, [isAuthenticated, user, fetchAppointments]);
+
+  useEffect(() => {
+    if (appointments.length > 0 && user) {
+      const lastReadTime = localStorage.getItem("lastNotificationReadTime");
+      const lastReadDate = lastReadTime ? new Date(lastReadTime) : new Date(0);
+
+      const generatedNotifications: Notification[] = appointments.map((apt) => {
+        const otherPartyName =
+          user.type === "patient"
+            ? apt.doctorId?.name || "Doctor"
+            : apt.patientId?.name || "Patient";
+
+        const aptDate = new Date(apt.updatedAt || apt.createdAt);
+
+        return {
+          id: apt._id,
+          title: `Appointment ${apt.status}`,
+          description: `${apt.status} appointment with ${otherPartyName}`,
+          time: aptDate.toLocaleDateString(),
+          timestamp: aptDate,
+          read: aptDate <= lastReadDate,
+        };
+      });
+
+      // Sort by newest first
+      generatedNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+      setNotifications(generatedNotifications);
+      setUnreadCount(generatedNotifications.filter((n) => !n.read).length);
+    }
+  }, [appointments, user]);
 
   const handleLogout = () => {
     logout();
     router.push("/");
+  };
+
+  const handleNotificationOpen = (open: boolean) => {
+    setIsOpen(open);
+    if (open && unreadCount > 0) {
+      const now = new Date();
+      localStorage.setItem("lastNotificationReadTime", now.toISOString());
+      setUnreadCount(0);
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    }
   };
 
   const getDashboardNavigation = (): NavigationItem[] => {
@@ -95,11 +156,10 @@ const Header: React.FC<HeaderProps> = ({ showDashboardNav = false }) => {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-1 transition-colors ${
-                    item.active
+                  className={`flex items-center space-x-1 transition-colors ${item.active
                       ? "text-blue-600 font-semibold"
                       : "text-gray-600 hover:text-blue-600"
-                  }`}
+                    }`}
                 >
                   <item.icon className="w-4 h-4" />
                   <span className="text-sm font-medium">{item.lable}</span>
@@ -111,12 +171,41 @@ const Header: React.FC<HeaderProps> = ({ showDashboardNav = false }) => {
 
         {isAuthenticated && showDashboardNav ? (
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="w-5 h-5" />
-              <Badge className="absolute -top-1 -right-1 w-5 h-5 text-xs bg-red-500 hover:bg-red-600">
-                4
-              </Badge>
-            </Button>
+            <DropdownMenu onOpenChange={handleNotificationOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="relative cursor-pointer">
+                  <Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 w-5 h-5 text-xs bg-red-500 hover:bg-red-600 flex items-center justify-center p-0">
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <DropdownMenuItem key={notification.id} className="cursor-pointer">
+                      <div className={`flex flex-col space-y-1 w-full ${!notification.read ? 'font-semibold' : ''}`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">{notification.title}</span>
+                          <span className="text-xs text-gray-500">{notification.time}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 line-clamp-2">
+                          {notification.description}
+                        </p>
+                      </div>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    No notifications
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -184,7 +273,7 @@ const Header: React.FC<HeaderProps> = ({ showDashboardNav = false }) => {
                     Settings
                   </Link>
                 </DropdownMenuItem>
-                       <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="text-red-600"

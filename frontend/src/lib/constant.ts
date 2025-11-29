@@ -57,7 +57,6 @@ export const healthcareCategories = [
   }
 ];
 
-
 // Healthcare categories (matches backend)
 export const healthcareCategoriesList = [
   "Primary Care",
@@ -69,6 +68,19 @@ export const healthcareCategoriesList = [
   "Women's Health",
   "Men's Health",
   "Wellness",
+  "Heart Health",
+  "Skin Care",
+  "Bone & Joint Health",
+  "Brain & Nerves",
+  "Eye Care",
+  "Dental Care",
+  "Urinary Health",
+  "Cancer Care",
+  "Hormonal Health",
+  "Digestive Health",
+  "Lung Health",
+  "Kidney Health",
+  "Immune System",
 ];
 
 export const specializations = [
@@ -82,68 +94,93 @@ export const specializations = [
   "ENT Specialist",
   "Psychiatrist",
   "Ophthalmologist",
+  "Dentist",
+  "Urologist",
+  "Oncologist",
+  "Endocrinologist",
+  "Gastroenterologist",
+  "Pulmonologist",
+  "Nephrologist",
+  "Rheumatologist",
 ];
 
+export const specializationToCategoryMap: Record<string, string[]> = {
+  "Cardiologist": ["Heart Health", "Manage Your Condition"],
+  "Dermatologist": ["Skin Care", "Wellness"],
+  "Orthopedic": ["Bone & Joint Health", "Senior Health"],
+  "Pediatrician": ["Children's Health", "Primary Care"],
+  "Neurologist": ["Brain & Nerves", "Senior Health"],
+  "Gynecologist": ["Women's Health", "Sexual Health"],
+  "General Physician": ["Primary Care", "Wellness", "Manage Your Condition", "Senior Health"],
+  "ENT Specialist": ["Primary Care"],
+  "Psychiatrist": ["Mental & Behavioral Health", "Wellness"],
+  "Ophthalmologist": ["Eye Care", "Senior Health"],
+  "Dentist": ["Dental Care", "Wellness"],
+  "Urologist": ["Urinary Health", "Men's Health", "Sexual Health"],
+  "Oncologist": ["Cancer Care", "Manage Your Condition"],
+  "Endocrinologist": ["Hormonal Health", "Manage Your Condition"],
+  "Gastroenterologist": ["Digestive Health"],
+  "Pulmonologist": ["Lung Health"],
+  "Nephrologist": ["Kidney Health"],
+  "Rheumatologist": ["Immune System", "Bone & Joint Health"],
+};
 
+export const testimonials = [
+  {
+    rating: 5,
+    text: "Doctor was available right away, listened to my symptoms and prescribed the right medication. He made sure to explain the medicines and that was it. Very fast and easy.",
+    author: "Pat J.",
+    location: "From Texas",
+    bgColor: "bg-chart-1/10"
+  },
+  {
+    rating: 5,
+    text: "The doctor made me feel comfortable right away, very easy to ask about concerns I might have had and great feedback from my doctors.",
+    author: "Patrice P.",
+    location: "From New York",
+    bgColor: "bg-chart-2/10"
+  },
+  {
+    rating: 5,
+    text: "My doctor was very professional, thorough, and careful to ask me numerous relevant questions. She answered my questions not only in a detailed manner, but also in a way I could understand.",
+    author: "Betty M.",
+    location: "From Tennessee",
+    bgColor: "bg-chart-4/10"
+  },
+  {
+    rating: 5,
+    text: "It was quick & easy to book the appointment. I was able to get a PC appointment the next morning... within 12 hours! I connected and got my ongoing meds refilled. It was so nice for me living in a rural community.",
+    author: "Katherine M.",
+    location: "From California",
+    bgColor: "bg-chart-5/10"
+  }
+];
 
-   export const testimonials = [
-    {
-      rating: 5,
-      text: "Doctor was available right away, listened to my symptoms and prescribed the right medication. He made sure to explain the medicines and that was it. Very fast and easy.",
-      author: "Pat J.",
-      location: "From Texas",
-      bgColor: "bg-chart-1/10"
-    },
-    {
-      rating: 5,
-      text: "The doctor made me feel comfortable right away, very easy to ask about concerns I might have had and great feedback from my doctors.",
-      author: "Patrice P.",
-      location: "From New York",
-      bgColor: "bg-chart-2/10"
-    },
-    {
-      rating: 5,
-      text: "My doctor was very professional, thorough, and careful to ask me numerous relevant questions. She answered my questions not only in a detailed manner, but also in a way I could understand.",
-      author: "Betty M.",
-      location: "From Tennessee",
-      bgColor: "bg-chart-4/10"
-    },
-    {
-      rating: 5,
-      text: "It was quick & easy to book the appointment. I was able to get a PC appointment the next morning... within 12 hours! I connected and got my ongoing meds refilled. It was so nice for me living in a rural community.",
-      author: "Katherine M.",
-      location: "From California",
-      bgColor: "bg-chart-5/10"
-    }
-  ];
+export const faqs = [
+  {
+    question: "How much does a doctor visit with MediCare+ cost?",
+    answer: "With insurance, you pay your copay based on your plan. We accept most plans, including Medicare. Without insurance, online doctor visits are $129. You can become a MediCare+ member and pay $44/visit. Membership is $55 for three months and $180 for a yearly membership."
+  },
+  {
+    question: "Do you accept health insurance?",
+    answer: "Yes, we accept most major health insurance plans including Medicare, BlueCross BlueShield, Aetna, United Healthcare, Cigna, Humana, and many others. We also accept FSA and HSA payments."
+  },
+  {
+    question: "What conditions can MediCare+ doctors treat?",
+    answer: "Our doctors can treat a wide range of conditions including cold and flu symptoms, allergies, skin conditions, mental health concerns, chronic condition management, and much more through virtual consultations."
+  },
+  {
+    question: "How quickly can I see a doctor?",
+    answer: "Many of our doctors are available for same-day appointments, and some offer immediate consultations. You can book appointments that fit your schedule, often within hours of your request."
+  }
+];
 
+export const trustLogos = [
+  "Business Insider", "CBS News", "CNBC", "Forbes", "Fortune", "Fox Business",
+  "Healthline", "Inc.", "Men's Health", "TechCrunch", "The New York Times", "WSJ"
+];
 
-    export const faqs = [
-    {
-      question: "How much does a doctor visit with MediCare+ cost?",
-      answer: "With insurance, you pay your copay based on your plan. We accept most plans, including Medicare. Without insurance, online doctor visits are $129. You can become a MediCare+ member and pay $44/visit. Membership is $55 for three months and $180 for a yearly membership."
-    },
-    {
-      question: "Do you accept health insurance?",
-      answer: "Yes, we accept most major health insurance plans including Medicare, BlueCross BlueShield, Aetna, United Healthcare, Cigna, Humana, and many others. We also accept FSA and HSA payments."
-    },
-    {
-      question: "What conditions can MediCare+ doctors treat?",
-      answer: "Our doctors can treat a wide range of conditions including cold and flu symptoms, allergies, skin conditions, mental health concerns, chronic condition management, and much more through virtual consultations."
-    },
-    {
-      question: "How quickly can I see a doctor?",
-      answer: "Many of our doctors are available for same-day appointments, and some offer immediate consultations. You can book appointments that fit your schedule, often within hours of your request."
-    }
-  ];
-
-  export const trustLogos = [
-    "Business Insider", "CBS News", "CNBC", "Forbes", "Fortune", "Fox Business",
-    "Healthline", "Inc.", "Men's Health", "TechCrunch", "The New York Times", "WSJ"
-  ];
-
-
-  export const contactInfo = [
+export const contactInfo = [
   {
     icon: Phone,
     text: "1-888-MEDICARE (1-888-633-4227)",
@@ -158,93 +195,84 @@ export const specializations = [
   },
 ];
 
+export const footerSections = [
+  {
+    title: "Company",
+    links: [
+      { text: "About Us", href: "/about" },
+      { text: "Support Center", href: "/support" },
+      { text: "Contact Us", href: "/contact" }
+    ]
+  },
+  {
+    title: "For Healthcare",
+    links: [
+      { text: "Join as Doctor", href: "/signup/doctor" },
+      { text: "Doctor Resources", href: "/doctor-resources" },
+    ]
+  },
+  {
+    title: "For Patients",
+    links: [
+      { text: "Find Doctors", href: "/doctors" },
+      { text: "Book Appointment", href: "/signup/patient" },
+    ]
+  },
+  {
+    title: "Legal",
+    links: [
+      { text: "Privacy Policy", href: "/privacy" },
+      { text: "Terms of Service", href: "/terms" },
+    ]
+  }
+];
 
-    export const footerSections = [
-    {
-      title: "Company",
-      links: [
-        { text: "About Us", href: "/about" },
-        { text: "Support Center", href: "/support" },
-        { text: "Contact Us", href: "/contact" }
-      ]
-    },
-    {
-      title: "For Healthcare",
-      links: [
-        { text: "Join as Doctor", href: "/signup/doctor" },
-        { text: "Doctor Resources", href: "/doctor-resources" },
-      ]
-    },
-    {
-      title: "For Patients",
-      links: [
-        { text: "Find Doctors", href: "/doctors" },
-        { text: "Book Appointment", href: "/signup/patient" },
-      ]
-    },
-    {
-      title: "Legal",
-      links: [
-        { text: "Privacy Policy", href: "/privacy" },
-        { text: "Terms of Service", href: "/terms" },
-      ]
-    }
-  ];
-
-
-  export const socials = [
+export const socials = [
   { name: "twitter", icon: Twitter, url: "https://twitter.com/medicare-plus" },
   { name: "facebook", icon: Facebook, url: "https://facebook.com/medicare-plus" },
   { name: "linkedin", icon: Linkedin, url: "https://linkedin.com/company/medicare-plus" },
-  { name: "instagram", icon: Instagram, url: "https://instagram.com/medicare-plus"},
+  { name: "instagram", icon: Instagram, url: "https://instagram.com/medicare-plus" },
 ]
 
+export const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad'];
 
-export  const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad'];
+export const consultationTypes = [
+  {
+    type: 'Video Consultation',
+    icon: Video,
+    description: 'Face-to-face consultation via HD video call',
+    price: 0,
+    recommended: true
+  },
+  {
+    type: 'Voice Call',
+    icon: Phone,
+    description: 'Audio-only consultation via voice call',
+    price: -100,
+    recommended: false
+  }
+];
 
+export const emptyStates = {
+  upcoming: {
+    icon: Clock,
+    title: "No Upcoming Appointments",
+    description: "You have no upcoming appointments scheduled.",
+  },
+  completed: {
+    icon: FileText,
+    title: "No Completed Appointments",
+    description: "Completed consultations will appear here.",
+  },
+};
 
-
- export const consultationTypes = [
-      {
-        type: 'Video Consultation',
-        icon: Video,
-        description: 'Face-to-face consultation via HD video call',
-        price: 0,
-        recommended: true
-      },
-      {
-        type: 'Voice Call',
-        icon: Phone,
-        description: 'Audio-only consultation via voice call',
-        price: -100,
-        recommended: false
-      }
-    ];
-
-
-    
-        export const emptyStates = {
-      upcoming: {
-        icon: Clock,
-        title: "No Upcoming Appointments",
-        description: "You have no upcoming appointments scheduled.",
-      },
-      completed: {
-        icon: FileText,
-        title: "No Completed Appointments",
-        description: "Completed consultations will appear here.",
-      },
-    };
-
-
-
-      export const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      case 'in progress': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+export const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'confirmed': return 'bg-green-100 text-green-800';
+    case 'pending': return 'bg-yellow-100 text-yellow-800';
+    case 'completed': return 'bg-blue-100 text-blue-800';
+    case 'cancelled': return 'bg-red-100 text-red-800';
+    case 'in progress': return 'bg-purple-100 text-purple-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
