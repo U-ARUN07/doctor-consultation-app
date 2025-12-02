@@ -76,7 +76,7 @@ git clone <repository-url>
 cd doctor-consultation-app
 ```
 
-### 2. Backend Setup
+### 2. Backend Setup (Local)
 Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
@@ -106,7 +106,7 @@ npm run dev
 # Server runs on http://localhost:8000
 ```
 
-### 3. Frontend Setup
+### 3. Frontend Setup (Local)
 Open a new terminal, navigate to the frontend directory, and install dependencies:
 ```bash
 cd frontend
@@ -123,6 +123,43 @@ Start the frontend development server:
 npm run dev
 # App runs on http://localhost:3000
 ```
+
+## 🚀 Deployment on Vercel
+
+This project is optimized for deployment on [Vercel](https://vercel.com/). You will need to deploy the **Backend** and **Frontend** separately.
+
+### 1. Backend Deployment
+The backend is an Express.js app configured for serverless deployment using `vercel.json`.
+
+1.  Push your code to a GitHub repository.
+2.  Log in to Vercel and click **"Add New..."** -> **"Project"**.
+3.  Import your repository.
+4.  **Configure Project**:
+    -   **Root Directory**: Select `backend` (Click "Edit" next to Root Directory).
+    -   **Framework Preset**: Select "Other".
+    -   **Environment Variables**: Add all variables from your backend `.env` file.
+        -   **IMPORTANT**: Update `FRONTEND_URL` to your *production* frontend URL (you might need to deploy frontend first or update this later).
+        -   **IMPORTANT**: Update `GOOGLE_CALLBACK_URL` to your *production* backend URL + `/api/auth/google/callback` (e.g., `https://your-backend.vercel.app/api/auth/google/callback`).
+5.  Click **Deploy**.
+
+### 2. Frontend Deployment
+The frontend is a Next.js application.
+
+1.  Go to Vercel Dashboard and click **"Add New..."** -> **"Project"**.
+2.  Import the *same* repository again.
+3.  **Configure Project**:
+    -   **Root Directory**: Select `frontend`.
+    -   **Framework Preset**: Next.js (should be auto-detected).
+    -   **Environment Variables**:
+        -   `NEXT_PUBLIC_API_URL`: Set this to your *deployed backend URL* + `/api` (e.g., `https://your-backend.vercel.app/api`).
+4.  Click **Deploy**.
+
+### 3. Post-Deployment Configuration
+After both are deployed:
+1.  **Update Backend Env**: Go to your Backend project settings on Vercel -> Environment Variables. Update `FRONTEND_URL` with the actual deployed Frontend URL. Redeploy the backend.
+2.  **Update Google Cloud Console**: Go to your Google Cloud Console -> APIs & Services -> Credentials. Edit your OAuth 2.0 Client ID.
+    -   Add your deployed Backend URL to **Authorized JavaScript origins**.
+    -   Add your deployed Backend Callback URL (e.g., `https://your-backend.vercel.app/api/auth/google/callback`) to **Authorized redirect URIs**.
 
 ## 🔗 API Endpoints
 
